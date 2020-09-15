@@ -18,3 +18,11 @@ export const cookieProps = Object.freeze({
         secure: (process.env.SECURE_COOKIE === 'true'),
     },
 });
+
+/************************************************************************************
+ *                              Connect with Google Storage
+ ***********************************************************************************/
+
+// Imports the Google Cloud client library
+const { Storage } = require('@google-cloud/storage');
+export const storage = (new Storage()).bucket('seshat-library');

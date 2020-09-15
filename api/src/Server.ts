@@ -8,13 +8,12 @@ import { BAD_REQUEST } from 'http-status-codes';
 import 'express-async-errors';
 
 import BaseRouter from './routes';
-import logger from '@shared/Logger';
+const logger = require('@shared/Logger')(module);
 import { cookieProps } from '@shared/constants';
 
 
 // Init express
 const app = express();
-
 
 
 /************************************************************************************
@@ -70,6 +69,4 @@ app.get('/users', (req: Request, res: Response) => {
     }
 });
 
-
-// Export express instance
 export default app;
