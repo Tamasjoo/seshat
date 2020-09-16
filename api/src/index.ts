@@ -1,7 +1,7 @@
 import './LoadEnv'; // Must be the first import
 
 import app from '@server';
-import logger from '@shared/Logger';
+const logger = require('@shared/Logger')(module);
 
 // Start the server
 const port = Number(process.env.PORT || 9000);
