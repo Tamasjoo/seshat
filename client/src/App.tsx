@@ -1,30 +1,37 @@
-import React from "react";
-import logo from "./logo.svg";
+import React, { useState, useEffect } from "react";
 import "./App.css";
+import { BrowserRouter, Route, Link } from "react-router-dom";
+import Browse from "./Browse";
+import ShowAll from "./ShowAll";
 
-function App() {
+const App = () => {
+    const [nav, setNav] = useState(""); // if we don´t want to hide the nav at some point we can also remove this because then probably we don´t want to change its state
+    const [allDocuments, setAllDocumnets] = useState("");
+    const [browseDocuments, setBrowseDocuments] = useState("");
     return (
-        <div className="main">
-            <nav>
-                <button>Show All</button>
-                <button>Browse</button>
-                <button>Upload</button>
-            </nav>
-            <main>
-                <header>
-                    <div>Name</div>
-                    <div>Last Modified On</div>
-                    <div>Size</div>
-                </header>
-                <div className="results_container">
-                    <img src="/img/pdf_logo.png" alt="file extension logo" />
-                    <p>File Name</p>
-                    <p>14.09.2020</p>
-                    <p>5 MB</p>
-                </div>
-            </main>
-        </div>
+        <BrowserRouter>
+            <div className="main_container">
+                <nav>
+                    <Link to="/">
+                        <button>Show All</button>
+                    </Link>
+                    <Link to="/browse">
+                        <button>Browse</button>
+                    </Link>
+                    <button>Upload</button>
+                </nav>
+                <main>
+                    <header>
+                        <div id="header_name">Name</div>
+                        <div id="header_last_modified">Last Modified On</div>
+                        <div id="header_size">Size</div>
+                    </header>
+                    <Route exact path="/" component={ShowAll} />
+                    <Route path="/browse" component={Browse} />
+                </main>
+            </div>
+        </BrowserRouter>
     );
-}
+};
 
 export default App;
