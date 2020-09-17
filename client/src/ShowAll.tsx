@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./results.css";
-import axios from "axios";
+import axios from "./axiosConfig";
 
 const ShowAll = () => {
     useEffect(() => {
