@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./results.css";
+import axios from "axios";
 
 const ShowAll = () => {
-    useEffect(() => console.log("mounted"), []); // this is where we want to make the initial call to the server to fetch the list of files in the DB
+    useEffect(() => {
+        console.log("mounted");
+        axios.get("/api/documents").then((res) => {
+            console.log("documents is: ", res);
+            let documents = res; // to be fixed
+        });
+    }, []); // check if we need to make this synchronouse in order to load before the render
+
     return (
         <div className="results_container">
             <img src="/img/pdf_logo.png" alt="file extension logo" />
