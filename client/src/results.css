@@ -1,0 +1,16 @@
+.results_container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    border: 1px solid black;
+}
+
+.results_container p {
+    height: 30px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.results_container img {
+    height: 30px;
+}
