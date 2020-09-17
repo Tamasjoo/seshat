@@ -8,8 +8,6 @@ import { adminMW } from '../routes/middleware';
 import { storage } from '@shared/constants'
 import { Writable, Readable } from 'stream';
 const logger = require('@shared/Logger')(module);
-const multer = require('multer');
-const upload = multer();
 
 // Init shared
 const router = Router().use(adminMW);
@@ -54,7 +52,7 @@ router.delete('/:document', async (req: Request, res: Response) => {
     document = unescape(document) as string;
     if (!document) {
         return res.status(BAD_REQUEST).json({
-            error: paramMissingError,
+            error: paramMissingError
         });
     } else {
         const file = await storage.file(document);
@@ -65,7 +63,6 @@ router.delete('/:document', async (req: Request, res: Response) => {
             res.status(NOT_FOUND).end();
         });
     }
-
 });
 
 /******************************************************************************
