@@ -1,62 +1,34 @@
-/**
- * Setup the winston logger.
- *
- * Documentation: https://github.com/winstonjs/winston
- */
-
 import path from 'path';
-import { createLogger, format, transports } from 'winston';
+import winston from 'winston';
+import morgan from 'morgan';
+import chalk from 'chalk';
+import { Request, Response } from 'express';
+import { appRoot } from '@shared/constants';
 
-// Import Functions
-const { File, Console } = transports;
+// Winston Logger
+export const sysLogger = winston.createLogger({
+  level: 'info',
+  transports: [
+    new winston.transports.Console({ level: 'info' }),
+    new winston.transports.File({
+      level: 'error',
+      filename: path.join(appRoot, 'log', 'error.log')
+    })
+  ],
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.align(),
+    winston.format.colorize(),
+    winston.format.simple(),
+    winston.format.printf(info =>
+      `[${info.timestamp}] ` +
+      `[${info.level}]: ` +
+      `${info.message}`
+    )
+  )
+});
 
-// Designed to access each file name whenever called
-module.exports = function (module: any) {
-
-  // Init Logger
-  const logger = createLogger({
-      level: 'info'
-  });
-
-  const loggerFormat = format.combine(
-      format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss'
-      }),
-      format.colorize(),
-      format.simple(),
-      format.printf(info =>
-        `[${info.timestamp}]` +
-        `[${info.level}]` +
-        `[@${path.basename(module.filename)}]: ` +
-        (info.stack ? `\n${info.stack}` : `${info.message}`))
-  );
-
-  /**
-   * For production write to all logs with level `info` and below
-   * to `combined.log. Write all logs error (and below) to `error.log`.
-   * For development, print to the console.
-   */
-  if (process.env.NODE_ENV === 'production') {
-
-      const errTransport = new File({
-          filename: './logs/error.log',
-          format: loggerFormat,
-          level: 'error'
-      });
-      const infoTransport = new File({
-          filename: './logs/combined.log',
-          format: loggerFormat
-      });
-      logger.add(errTransport);
-      logger.add(infoTransport);
-
-  } else {
-
-      const consoleTransport = new Console({
-          format: loggerFormat
-      });
-      logger.add(consoleTransport);
-  }
-
-  return logger;
-};
+export const httpLogger = morgan(
+  '(:remote-addr) ":method :url" :status - :response-time ms', {
+  stream: { write: message => sysLogger.info(message) }
+});
