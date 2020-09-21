@@ -6,7 +6,7 @@ import ShowAll from "./ShowAll";
 
 const App = () => {
     const [nav, setNav] = useState(""); // if we don´t want to hide the nav at some point we can also remove this because then probably we don´t want to change its state
-    const [allDocuments, setAllDocumnets] = useState("");
+
     const [browseDocuments, setBrowseDocuments] = useState("");
     return (
         <BrowserRouter>

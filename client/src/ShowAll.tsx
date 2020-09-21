@@ -3,20 +3,38 @@ import "./results.css";
 import axios from "./axiosConfig";
 
 const ShowAll = () => {
+    const [allDocuments, setAllDocuments] = useState([]);
+
     useEffect(() => {
-        console.log("mounted");
         axios.get("/api/documents").then((res) => {
-            console.log("documents is: ", res);
-            let documents = res; // to be fixed
+            console.log("res.data is: ", res.data);
+            setAllDocuments(res.data);
         });
-    }, []); // check if we need to make this synchronouse in order to load before the render
+    }, []);
+
+    const download = (name: any) => {
+        console.log("document name clicked", name);
+        axios
+            .get("/api/documents/" + name, {
+                responseType: "stream",
+            })
+            .then((res) => {
+                console.log(res);
+            });
+    };
 
     return (
         <div className="results_container">
-            <img src="/img/pdf_logo.png" alt="file extension logo" />
-            <p>I am a sample file in Show All component</p>
-            <p>14.09.2020</p>
-            <p>5 MB</p>
+            {!allDocuments && <p>No Files</p>}
+            {allDocuments &&
+                allDocuments.map((document: any, i: any) => {
+                    return (
+                        <div key={i} onClick={(e) => download(document.name)}>
+                            {document.name} {document.timeCreated}{" "}
+                            {document.size}
+                        </div>
+                    );
+                })}
         </div>
     );
 };
