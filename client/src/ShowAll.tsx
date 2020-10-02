@@ -3,41 +3,58 @@ import "./results.css";
 import axios from "./axiosConfig";
 
 const ShowAll = () => {
-  const [allDocuments, setAllDocuments] = useState([]);
+    const [allDocuments, setAllDocuments] = useState([]);
 
-  useEffect(() => {
-    axios.get("/api/documents").then((res) => {
-      console.log("res.data is: ", res.data);
-      setAllDocuments(res.data);
-    });
-  }, []);
+    useEffect(() => {
+        axios.get("/api/documents").then((res) => {
+            console.log("res.data is: ", res.data);
+            for (let i = 0; i < res.data.length; i++) {
+                if (res.data[i].size / 1073741824 >= 1) {
+                    let size = res.data[i].size / 1073741824;
+                    res.data[i].size = `${size.toFixed(2)} GB`;
+                } else if (res.data[i].size / 1048576 >= 1) {
+                    let size = res.data[i].size / 1048576;
+                    res.data[i].size = `${size.toFixed(2)} MB`;
+                } else if (res.data[i].size / 1024 >= 1) {
+                    let size = res.data[i].size / 1024;
+                    res.data[i].size = `${size.toFixed(2)} KB`;
+                } else {
+                    res.data[i].size = `${res.data[i].size.toFixed(2)} B `;
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                res.data[i].timeCreated = res.data[i].timeCreated.slice(0, 10);
+            }
+            setAllDocuments(res.data);
+        });
+    }, []);
 
-  const download = (name: any) => {
-    console.log("document name clicked", name);
-    axios
-    .get("/api/documents/" + name, {
-      responseType: "stream",
-    })
-    .then((res) => {
-      console.log(res);
-    });
-  };
+    const download = (name: any) => {
+        console.log("document name clicked", name);
+        axios
+            .get("/api/documents/" + name, {
+                responseType: "stream",
+            })
+            .then((res) => {
+                console.log(res);
+            });
+    };
 
-  return (
-    <tbody>
-    {!allDocuments && <p>No Files</p>}
-    {allDocuments &&
-      allDocuments.map((document: any, i: any) => {
-        return (
-          <tr key={i} onClick={(e) => download(document.name)}>
-            <td>{document.name}</td>
-            <td>{document.timeCreated}</td>
-            <td>{document.size}</td>
-          </tr>
-        );
-      })}
-    </tbody>
+    return (
+        <tbody>
+            {!allDocuments && <p>No Files</p>}
+            {allDocuments &&
+                allDocuments.map((document: any, i: any) => {
+                    return (
+                        <tr key={i} onClick={(e) => download(document.name)}>
+                            <td>{document.name}</td>
+                            <td>{document.timeCreated}</td>
+                            <td>{document.size}</td>
+                        </tr>
+                    );
+                })}
+        </tbody>
     );
-  };
+};
 
-  export default ShowAll;
+export default ShowAll;
