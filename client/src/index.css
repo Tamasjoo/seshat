@@ -1,0 +1,16 @@
+table {
+    position: relative;
+    border-collapse: collapse;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    border-top: 0 !important;
+}
+
+tbody tr td:nth-child(3),
+thead tr th:nth-child(3) {
+    text-align: right;
+}

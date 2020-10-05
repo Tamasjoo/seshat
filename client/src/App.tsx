@@ -11,7 +11,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <div className="container">
-                <nav className="navbar navbar-fixed-top navbar-expand-lg navbar-light bg-light">
+                <nav className="navbar navbar-expand-lg navbar-light bg-light">
                     <a className="navbar-brand" href="#">
                         <img
                             src="/img/bk.jpg"

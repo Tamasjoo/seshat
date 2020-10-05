@@ -22,8 +22,11 @@ const ShowAll = () => {
                     res.data[i].size = `${res.data[i].size.toFixed(2)} B `;
                 }
             }
+
             for (let i = 0; i < res.data.length; i++) {
-                res.data[i].timeCreated = res.data[i].timeCreated.slice(0, 10);
+                res.data[i].timeCreated = new Date(
+                    res.data[i].timeCreated
+                ).toLocaleString();
             }
             setAllDocuments(res.data);
         });
