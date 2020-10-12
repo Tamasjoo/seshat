@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./results.css";
 import axios from "./axiosConfig";
+import fileDownload from "js-file-download";
+import { FileIcon, defaultStyles } from "react-file-icon";
 
 const ShowAll = () => {
     const [allDocuments, setAllDocuments] = useState([]);
@@ -33,13 +35,13 @@ const ShowAll = () => {
     }, []);
 
     const download = (name: any) => {
-        console.log("document name clicked", name);
         axios
             .get("/api/documents/" + name, {
-                responseType: "stream",
+                responseType: "blob",
             })
             .then((res) => {
-                console.log(res);
+                console.log("document name clicked", name);
+                fileDownload(res.data, name);
             });
     };
 
