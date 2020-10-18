@@ -52,6 +52,18 @@ const ShowAll = () => {
                 allDocuments.map((document: any, i: any) => {
                     return (
                         <tr key={i} onClick={(e) => download(document.name)}>
+                            <td>
+                                <FileIcon
+                                    extension={document.name.substring(
+                                        document.name.lastIndexOf(".") + 1
+                                    )}
+                                    {...(defaultStyles as any)[
+                                        document.name.substring(
+                                            document.name.lastIndexOf(".") + 1
+                                        )
+                                    ]}
+                                />
+                            </td>
                             <td>{document.name}</td>
                             <td>{document.timeCreated}</td>
                             <td>{document.size}</td>

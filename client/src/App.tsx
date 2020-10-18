@@ -51,15 +51,19 @@ const App = () => {
                     </div>
                 </nav>
                 <table className="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Created At</th>
-                            <th scope="col">Size</th>
-                        </tr>
-                    </thead>
-                    <Route exact path="/" component={ShowAll} />
-                    <Route path="/browse" component={Browse} />
+                    <tbody>
+                        <thead>
+                            <tr>
+                                <th scope="col">Type</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Created At</th>
+                                <th scope="col">Size</th>
+                            </tr>
+                        </thead>
+
+                        <Route exact path="/" component={ShowAll} />
+                        <Route path="/browse" component={Browse} />
+                    </tbody>
                 </table>
             </div>
         </BrowserRouter>
