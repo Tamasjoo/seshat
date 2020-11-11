@@ -6,7 +6,6 @@ import { paramMissingError } from '@shared/constants';
 import { adminMW } from '../routes/middleware';
 
 import { storage } from '@shared/constants'
-import { Writable, Readable } from 'stream';
 import { sysLogger } from '@shared/Logger';
 
 // Init shared
@@ -70,13 +69,35 @@ router.delete('/:document', async (req: Request, res: Response) => {
 ******************************************************************************/
 
 router.get('/', async (req: Request, res: Response) => {
-  const response = await storage.getFiles();
-  const files = response[0].map((file: any) => ({
-    name: file.metadata.name,
-    timeCreated: file.metadata.timeCreated,
-    size: file.metadata.size
-  }));
-  res.status(OK).json(files);
+  const searchLimit = 15;
+  const { pattern, pageToken } = req.query as ParamsDictionary;
+  if (!!pattern)
+    sysLogger.info(`File search: "${unescape(pattern)}"`);
+  const callback = (err: Error, files: Array<object>, nextQuery: any, apiResponse: any) => {
+    if (!!err) {
+      sysLogger.error(err);
+      return res.status(BAD_GATEWAY).end();
+    } else {
+      const docs = files.map((file: any) => ({
+        name: file.metadata.name,
+        size: file.metadata.size,
+        timeCreated: file.metadata.timeCreated
+      }));
+      sysLogger.info(`Listing ${files.length} files.`);
+      res.status(OK).json({
+        nextQuery: nextQuery,
+        documents: docs
+      });
+    }
+  };
+  await storage.getFiles(
+    Object.assign({
+      ...({ maxResults: searchLimit,
+            autoPaginate: true }),
+      ...(!!pattern ? { prefix: unescape(pattern) } : {}),
+      ...(!!pageToken ? { pageToken: pageToken } : {}),
+  }), callback);
+
 });
 
 /******************************************************************************

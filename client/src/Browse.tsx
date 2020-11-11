@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import React, { useState, useEffect } from "react";
-import "./results.css";
+import "./styling/results.css";
 
 const Browse = () => {
     return (

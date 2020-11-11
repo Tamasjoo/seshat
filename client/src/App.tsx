@@ -6,7 +6,6 @@ import ShowAll from "./ShowAll";
 
 const App = () => {
     const [nav, setNav] = useState(""); // if we don´t want to hide the nav at some point we can also remove this because then probably we don´t want to change its state
-    // can´t make the nav to have a fixed position, nor couldn´t add a width to the th element after making it fixed
     const [browseDocuments, setBrowseDocuments] = useState("");
     return (
         <BrowserRouter>
@@ -51,19 +50,24 @@ const App = () => {
                     </div>
                 </nav>
                 <table className="table">
-                    <tbody>
-                        <thead>
-                            <tr>
-                                <th scope="col">Type</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Created At</th>
-                                <th scope="col">Size</th>
-                            </tr>
-                        </thead>
-
-                        <Route exact path="/" component={ShowAll} />
-                        <Route path="/browse" component={Browse} />
-                    </tbody>
+                    <thead>
+                        <tr>
+                            <th className="text-left" scope="col">
+                                Type
+                            </th>
+                            <th className="text-left" scope="col">
+                                Name
+                            </th>
+                            <th className="text-left" scope="col">
+                                Created At
+                            </th>
+                            <th className="text-right" scope="col">
+                                Size
+                            </th>
+                        </tr>
+                    </thead>
+                    <Route exact path="/" component={ShowAll} />
+                    <Route path="/browse" component={Browse} />
                 </table>
             </div>
         </BrowserRouter>
