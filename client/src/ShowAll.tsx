@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./styling/results.css";
 import axios from "./axiosConfig";
 import fileDownload from "js-file-download";
@@ -29,6 +29,39 @@ const ShowAll = () => {
     const initialLoading: boolean = true;
     const [loading, setLoading] = useState(initialLoading); // set it to true when the user is at the bottom of the page, set it to false when the last page is reached
     // https://www.pluralsight.com/guides/how-to-implement-infinite-scrolling-with-reactjs
+
+    /*  ********************  useref  ********************  */
+
+    let inputEl = useRef(null);
+
+    /* ***************** intersection obs *************** */
+    let options = {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1.0,
+    };
+
+    let variable;
+
+    let callback = (entry: any) => {
+        variable = entry.isIntersecting;
+        // Each entry describes an intersection change for one observed
+        // target element:
+        //   entry.boundingClientRect
+        //   entry.intersectionRatio
+        //   entry.intersectionRect
+        //   entry.isIntersecting
+        //   entry.rootBounds
+        //   entry.target
+        //   entry.time
+    };
+
+    let observer = new IntersectionObserver(callback, options);
+
+    let target: any = inputEl.current;
+    observer.observe(target);
+
+    /* ***************** intersection obs *************** */
 
     useEffect(() => {
         axios
@@ -104,6 +137,7 @@ const ShowAll = () => {
                         </tr>
                     );
                 })}
+            <input ref={inputEl} type="text" />
             {loading && (
                 <div className="lds-ring">
                     <div></div>
