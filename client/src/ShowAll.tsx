@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+/* tslint:disable */
+
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./styling/results.css";
 import axios from "./axiosConfig";
 import fileDownload from "js-file-download";
@@ -32,36 +34,87 @@ const ShowAll = () => {
 
     /*  ********************  useref  ********************  */
 
-    let inputEl = useRef(null);
+    let observer = useRef();
 
-    /* ***************** intersection obs *************** */
-    let options = {
-        root: null,
-        rootMargin: "0px",
-        threshold: 1.0,
-    };
+    let bla;
+    const lastDocumentRef: any = useCallback(
+        (node: any) => {
+            if (loading) return;
+            console.log(node); // @ts-ignore
+            if (observer.current) observer.current.disconnect(); // @ts-ignore
+            observer.current = new IntersectionObserver((entries) => {
+                // @ts-ignore
+                if (entries[0].isIntersecting) {
+                    console.log("visible");
+                    axios
+                        .get("/api/documents", {
+                            query: { pattern: pattern, pageToken: pageToken },
+                        } as any)
+                        .then((res) => {
+                            console.log("res.data is: ", res.data);
+                            for (
+                                let i = 0;
+                                i < res.data.documents.length;
+                                i++
+                            ) {
+                                if (
+                                    res.data.documents[i].size / 1073741824 >=
+                                    1
+                                ) {
+                                    let size =
+                                        res.data.documents[i].size / 1073741824;
+                                    res.data.documents[
+                                        i
+                                    ].size = `${size.toFixed(2)} GB`;
+                                } else if (
+                                    res.data.documents[i].size / 1048576 >=
+                                    1
+                                ) {
+                                    let size =
+                                        res.data.documents[i].size / 1048576;
+                                    res.data.documents[
+                                        i
+                                    ].size = `${size.toFixed(2)} MB`;
+                                } else if (
+                                    res.data.documents[i].size / 1024 >=
+                                    1
+                                ) {
+                                    let size =
+                                        res.data.documents[i].size / 1024;
+                                    res.data.documents[
+                                        i
+                                    ].size = `${size.toFixed(2)} KB`;
+                                } else {
+                                    res.data.documents[
+                                        i
+                                    ].size = `${res.data.documents[
+                                        i
+                                    ].size.toFixed(2)} B `;
+                                }
+                            }
 
-    let variable;
-
-    let callback = (entry: any) => {
-        variable = entry.isIntersecting;
-        // Each entry describes an intersection change for one observed
-        // target element:
-        //   entry.boundingClientRect
-        //   entry.intersectionRatio
-        //   entry.intersectionRect
-        //   entry.isIntersecting
-        //   entry.rootBounds
-        //   entry.target
-        //   entry.time
-    };
-
-    let observer = new IntersectionObserver(callback, options);
-
-    let target: any = inputEl.current;
-    observer.observe(target);
-
-    /* ***************** intersection obs *************** */
+                            for (
+                                let i = 0;
+                                i < res.data.documents.length;
+                                i++
+                            ) {
+                                res.data.documents[i].timeCreated = new Date(
+                                    res.data.documents[i].timeCreated
+                                ).toLocaleString(); // @ts-ignore
+                            } // @ts-ignore
+                            setAllDocuments([
+                                ...allDocuments,
+                                ...res.data.documents,
+                            ]);
+                            setLoading(false);
+                            setPageToken(res.data.nextQuery.pageToken);
+                        });
+                }
+            }); // @ts-ignore
+            if (node) observer.current.observe(node); // @ts-ignore
+        }, // @ts-ignore
+        [loading]
+    );
 
     useEffect(() => {
         axios
@@ -115,29 +168,61 @@ const ShowAll = () => {
             )}
             {allDocuments !== [{ name: "", size: "", timeCreated: "" }] &&
                 allDocuments.map((document: any, i: number) => {
-                    return (
-                        <tr key={i} onClick={(e) => download(document.name)}>
-                            <td className="text-left">
-                                <FileIcon
-                                    extension={document.name.substring(
-                                        document.name.lastIndexOf(".") + 1
-                                    )}
-                                    {...(defaultStyles as any)[
-                                        document.name.substring(
+                    if (allDocuments.length === i + 1) {
+                        return (
+                            <tr
+                                key={i}
+                                onClick={(e) => download(document.name)}
+                                ref={lastDocumentRef}
+                            >
+                                <td className="text-left">
+                                    <FileIcon
+                                        extension={document.name.substring(
                                             document.name.lastIndexOf(".") + 1
-                                        )
-                                    ]}
-                                />
-                            </td>
-                            <td className="text-left">{document.name}</td>
-                            <td className="text-left">
-                                {document.timeCreated}
-                            </td>
-                            <td className="text-right">{document.size}</td>
-                        </tr>
-                    );
+                                        )}
+                                        {...(defaultStyles as any)[
+                                            document.name.substring(
+                                                document.name.lastIndexOf(".") +
+                                                    1
+                                            )
+                                        ]}
+                                    />
+                                </td>
+                                <td className="text-left">{document.name}</td>
+                                <td className="text-left">
+                                    {document.timeCreated}
+                                </td>
+                                <td className="text-right">{document.size}</td>
+                            </tr>
+                        );
+                    } else {
+                        return (
+                            <tr
+                                key={i}
+                                onClick={(e) => download(document.name)}
+                            >
+                                <td className="text-left">
+                                    <FileIcon
+                                        extension={document.name.substring(
+                                            document.name.lastIndexOf(".") + 1
+                                        )}
+                                        {...(defaultStyles as any)[
+                                            document.name.substring(
+                                                document.name.lastIndexOf(".") +
+                                                    1
+                                            )
+                                        ]}
+                                    />
+                                </td>
+                                <td className="text-left">{document.name}</td>
+                                <td className="text-left">
+                                    {document.timeCreated}
+                                </td>
+                                <td className="text-right">{document.size}</td>
+                            </tr>
+                        );
+                    }
                 })}
-            <input ref={inputEl} type="text" />
             {loading && (
                 <div className="lds-ring">
                     <div></div>
