@@ -7,51 +7,53 @@ import fileDownload from "js-file-download";
 import { FileIcon, defaultStyles } from "react-file-icon";
 
 const ShowAll = () => {
-    const initialAllDocuments: [
-        {
-            name: string;
-            size: string;
-            timeCreated: string;
-        }
-    ] = [
-        {
-            name: "",
-            size: "",
-            timeCreated: "",
-        },
-    ];
-    const [allDocuments, setAllDocuments] = useState(initialAllDocuments); // empty state is not displayed for some reason
+    // useeffect calls search function
+    // make the initial request to get initial documents, set states, set intersectionobserver
+    // get the observer to make request
 
-    const initialPageToken: string = "";
-    const [pageToken, setPageToken] = useState(initialPageToken); // google cloude storage needs it to determine which set of items is needed next
+    const [allDocuments, setAllDocuments] = useState(); // empty state is not displayed for some reason
 
-    const initialPattern: string = "";
-    const [pattern, setPattern] = useState(initialPattern); // search pattern that we will implement later in the FE but in he BE it already exists
+    const [pageToken, setPageToken] = useState(); // google cloude storage needs it to determine which set of items is needed next
 
-    const initialLoading: boolean = true;
-    const [loading, setLoading] = useState(initialLoading); // set it to true when the user is at the bottom of the page, set it to false when the last page is reached
+    const [pattern, setPattern] = useState(); // search pattern that we will implement later in the FE but in he BE it already exists
+
+    const [loading, setLoading] = useState(false); // set it to true when the user is at the bottom of the page, set it to false when the last page is reached
+
+    const [noMoreResults, setNoMoreResults] = useState(false);
     // https://www.pluralsight.com/guides/how-to-implement-infinite-scrolling-with-reactjs
 
     /*  ********************  useref  ********************  */
 
     let observer = useRef();
 
-    let bla;
     const lastDocumentRef: any = useCallback(
         (node: any) => {
             if (loading) return;
-            console.log(node); // @ts-ignore
+
+            console.log("node is: ", node); // @ts-ignore
             if (observer.current) observer.current.disconnect(); // @ts-ignore
+            console.log("pageToken in lastDocumentRef is: ", pageToken); // @ts-ignore
             observer.current = new IntersectionObserver((entries) => {
                 // @ts-ignore
                 if (entries[0].isIntersecting) {
-                    console.log("visible");
+                    console.log("lastDocumentRef visible");
+                    console.log(
+                        "pageToken in lastDocumentRef if section is: ",
+                        pageToken
+                    );
+                    if (noMoreResults) {
+                        return;
+                    }
+                    setLoading(true);
                     axios
                         .get("/api/documents", {
-                            query: { pattern: pattern, pageToken: pageToken },
+                            params: { pattern: pattern, pageToken: pageToken },
                         } as any)
                         .then((res) => {
-                            console.log("res.data is: ", res.data);
+                            console.log(
+                                "res.data in lastDocumentRef is: ",
+                                res.data
+                            );
                             for (
                                 let i = 0;
                                 i < res.data.documents.length;
@@ -107,6 +109,10 @@ const ShowAll = () => {
                                 ...res.data.documents,
                             ]);
                             setLoading(false);
+                            if (!res.data.nextQuery) {
+                                setNoMoreResults(true);
+                                return;
+                            }
                             setPageToken(res.data.nextQuery.pageToken);
                         });
                 }
@@ -117,12 +123,17 @@ const ShowAll = () => {
     );
 
     useEffect(() => {
+        console.log("pageToken in useeffect is: ", pageToken);
         axios
             .get("/api/documents", {
-                query: { pattern: pattern, pageToken: pageToken },
+                params: {
+                    pattern: pattern,
+                    pageToken: pageToken,
+                    test: "test",
+                },
             } as any)
             .then((res) => {
-                console.log("res.data is: ", res.data);
+                console.log("res.data in useeffect is: ", res.data);
                 for (let i = 0; i < res.data.documents.length; i++) {
                     if (res.data.documents[i].size / 1073741824 >= 1) {
                         let size = res.data.documents[i].size / 1073741824;
@@ -147,7 +158,16 @@ const ShowAll = () => {
                 }
                 setAllDocuments(res.data.documents);
                 setLoading(false);
+
+                if (!res.data.nextQuery) {
+                    setNoMoreResults(true);
+                    return;
+                }
                 setPageToken(res.data.nextQuery.pageToken);
+                console.log(
+                    "res.data.nextQuery.pageToken in useeffect is is: ",
+                    res.data.nextQuery.pageToken
+                );
             });
     }, []);
 
