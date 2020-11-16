@@ -7,47 +7,41 @@ import fileDownload from "js-file-download";
 import { FileIcon, defaultStyles } from "react-file-icon";
 
 const ShowAll = () => {
-    // useeffect calls search function
-    // make the initial request to get initial documents, set states, set intersectionobserver
-    // get the observer to make request
-
-    const [allDocuments, setAllDocuments] = useState([]); // @ts-ignore // empty state is not displayed for some reason
+    const [allDocuments, setAllDocuments] = useState([]);
 
     const [pageToken, setPageToken] = useState(); // google cloude storage needs it to determine which set of items is needed next
 
     const [pattern, setPattern] = useState(""); // search pattern that we will implement later in the FE but in he BE it already exists
 
-    const [loading, setLoading] = useState(false); // set it to true when the user is at the bottom of the page, set it to false when the last page is reached
-
     const [noMoreResults, setNoMoreResults] = useState(false);
 
     const [pageNumber, setPageNumber] = useState(1);
-    // https://www.pluralsight.com/guides/how-to-implement-infinite-scrolling-with-reactjs
+
+    const [displayLoadingIcon, setDisplayLoadingIcon] = useState(false);
 
     /*  ********************  useref  ********************  */
 
     let observer = useRef();
 
-    const lastDocumentRef = useCallback(
-        (node) => {
-            console.log("lastdocuref");
-            if (loading) return;
-            console.log("node is: ", node); // @ts-ignore
-            if (observer.current) observer.current.disconnect(); // @ts-ignore
-            observer.current = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && !noMoreResults) {
-                    setPageNumber((PageNumber) => PageNumber + 1);
-                }
-            });
-            if (node) observer.current.observe(node); // @ts-ignore
-        }, // @ts-ignore
-        [loading]
-    );
+    // every time the referenced element is rendered, it will run the function below
+    const lastDocumentRef = useCallback((node) => {
+        if (displayLoadingIcon) return;
+        console.log("lastdocuref triggered");
+        console.log("node is: ", node);
+        if (observer.current) observer.current.disconnect();
+        observer.current = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !noMoreResults) {
+                setPageNumber((pageNumber) => pageNumber + 1);
+            }
+        });
+        if (node) observer.current.observe(node);
+    }, []);
+
     useEffect(() => {
         console.log("useeffect triggered");
-
+        if (noMoreResults) observer.current.disconnect();
         if (noMoreResults) return;
-        setLoading(true);
+        setDisplayLoadingIcon(true);
         axios
             .get("/api/documents", {
                 params: {
@@ -56,7 +50,6 @@ const ShowAll = () => {
                 },
             })
             .then((res) => {
-                console.log("res.data is: ", res.data);
                 //formatting the size property of results
                 for (let i = 0; i < res.data.documents.length; i++) {
                     if (res.data.documents[i].size / 1073741824 >= 1) {
@@ -81,20 +74,17 @@ const ShowAll = () => {
                     ).toLocaleString();
                 }
                 setAllDocuments([...allDocuments, ...res.data.documents]);
-                setLoading(false);
-
+                setDisplayLoadingIcon(false);
+                if (noMoreResults) observer.current.disconnect();
                 if (!res.data.nextQuery) {
                     setNoMoreResults(true);
                     return;
                 }
                 setPageToken(res.data.nextQuery.pageToken);
-                console.log(
-                    "res.data.nextQuery.pageToken in useeffect is is: ",
-                    res.data.nextQuery.pageToken
-                );
             });
     }, [pageNumber]);
 
+    // upon a click on a file, it gets downloaded
     const download = (name) => {
         axios
             .get("/api/documents/" + name, {
@@ -140,7 +130,7 @@ const ShowAll = () => {
                         </tr>
                     );
                 })}
-            {loading && (
+            {displayLoadingIcon && (
                 <div className="lds-ring">
                     <div></div>
                     <div></div>

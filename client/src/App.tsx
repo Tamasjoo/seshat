@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import { BrowserRouter, Route, Link } from "react-router-dom";
 import Browse from "./Browse";
 import ShowAll from "./ShowAll";
 
 const App = () => {
-    const [nav, setNav] = useState(""); // if we don´t want to hide the nav at some point we can also remove this because then probably we don´t want to change its state
-    const [browseDocuments, setBrowseDocuments] = useState("");
     return (
         <BrowserRouter>
             <div className="container">
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                    <a className="navbar-brand" href="#">
+                    <a className="navbar-brand" href="/">
                         <img
                             src="/img/bk.jpg"
                             width="30"
