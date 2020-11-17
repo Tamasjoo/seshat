@@ -131,12 +131,12 @@ const ShowAll = () => {
                     );
                 })}
             {displayLoadingIcon && (
-                <div className="lds-ring">
+                <tr className="lds-ring">
                     <div></div>
                     <div></div>
                     <div></div>
                     <div></div>
-                </div>
+                </tr>
             )}
         </tbody>
     );
