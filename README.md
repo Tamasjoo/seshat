@@ -15,12 +15,10 @@ We created this project with my friend David Sieberger to gain experience with n
 The backend of application is connected to a Google Cloud Storage bucket and it retrieves the files from there and the frontend of the application lists them.
 
 ## Main Features
-
 - Download files
 - Infinite scroll
 
 ## Notes
-
 - It works but it is not ready yet
 - Typescript is turned off in the frontend for now
 
@@ -30,7 +28,11 @@ To access the bucket, credentials are necessary and those have to be requested f
 
 - clone the repo
 - run npm install in the client and api folder too
-- add .env files
+- copy the json file containing the crendentials into the api folder
+- in your terminal open 2 windows
+-- go to the api folder and run npm start
+-- go to the client folder and run npm start
+- once they are running, you can open the page on http://localhost:3000/
 
 This application was setup by following this [tutorial](https://www.freecodecamp.org/news/create-a-react-frontend-a-node-express-backend-and-connect-them-together-c5798926047c/).
 
