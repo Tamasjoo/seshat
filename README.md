@@ -8,7 +8,7 @@
 
 ## About
 
-We created this project with my friend David Sieberger to gain experience with new libraries. My contributions are in frontend part of the application.
+We created this project with my friend David Sieberger to try out new tech like Typescript and Bootsrap. My contributions are in frontend part of the application.
 
 ## What does the app do?
 
