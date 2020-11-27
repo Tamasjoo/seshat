@@ -11,7 +11,7 @@ const ShowAll = () => {
 
     const [pageToken, setPageToken] = useState(); // google cloude storage needs it to determine which set of items is needed next
 
-    const [pattern, setPattern] = useState(""); // search pattern that we will implement later in the FE but in he BE it already exists
+    const pattern = "";
 
     const [noMoreResults, setNoMoreResults] = useState(false);
 
@@ -19,11 +19,8 @@ const ShowAll = () => {
 
     const [displayLoadingIcon, setDisplayLoadingIcon] = useState(false);
 
-    /*  ********************  useref  ********************  */
-
     let observer = useRef();
 
-    // every time the referenced element is rendered, it will run the function below
     const lastDocumentRef = useCallback((node) => {
         if (displayLoadingIcon) return;
         console.log("lastdocuref triggered");
@@ -62,9 +59,8 @@ const ShowAll = () => {
                         let size = res.data.documents[i].size / 1024;
                         res.data.documents[i].size = `${size.toFixed(2)} KB`;
                     } else {
-                        res.data.documents[i].size = `${res.data.documents[
-                            i
-                        ].size.toFixed(2)} B `;
+                        let size = res.data.documents[i].size;
+                        res.data.documents[i].size = `${size} B `;
                     }
                 }
                 //formatting the date part of the results
@@ -81,6 +77,9 @@ const ShowAll = () => {
                     return;
                 }
                 setPageToken(res.data.nextQuery.pageToken);
+            })
+            .catch((error) => {
+                console.error("error: ", error);
             });
     }, [pageNumber]);
 
