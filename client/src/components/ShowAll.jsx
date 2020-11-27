@@ -1,8 +1,6 @@
-/* tslint:disable */
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import "./styling/results.css";
-import axios from "./axiosConfig";
+import "../styling/results.css"
+import axios from "../axiosConfig";
 import fileDownload from "js-file-download";
 import { FileIcon, defaultStyles } from "react-file-icon";
 
@@ -30,7 +28,7 @@ const ShowAll = () => {
             if (entries[0].isIntersecting && !noMoreResults) {
                 setPageNumber((pageNumber) => pageNumber + 1);
             }
-        });
+        })
         if (node) observer.current.observe(node);
     }, []);
 
@@ -83,10 +81,10 @@ const ShowAll = () => {
             });
     }, [pageNumber]);
 
-    // upon a click on a file, it gets downloaded
+// upon a click on a file, it gets downloaded
+
     const download = (name) => {
-        axios
-            .get("/api/documents/" + name, {
+            axios.get("/api/documents/" + name, {
                 responseType: "blob",
             })
             .then((res) => {
@@ -95,22 +93,30 @@ const ShowAll = () => {
     };
 
     return (
-        <tbody>
-            {!allDocuments && <p>No Files to display</p>}
-            {allDocuments &&
-                allDocuments.map((document, i) => {
-                    return (
-                        <tr
-                            key={i}
-                            onClick={(e) => download(document.name)}
-                            ref={
-                                allDocuments.length === i + 1
-                                    ? lastDocumentRef
-                                    : null
-                            }
-                        >
-                            <td className="text-left">
-                                <FileIcon
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th className="text-left" scope="col">
+                            Type
+                        </th>
+                        <th className="text-left" scope="col">
+                            Name
+                        </th>
+                        <th className="text-left" scope="col">
+                            Created At
+                        </th>
+                        <th className="text-right" scope="col">
+                            Size
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {!allDocuments && <p>No Files to display</p>}
+                    {allDocuments && allDocuments.map((document, i) => {
+                        return (
+                                <tr key={i} onClick={(e) => download(document.name)} ref={allDocuments.length === i + 1 ? lastDocumentRef : null}>
+                                    <td className="text-left">
+                                    <FileIcon
                                     extension={document.name.substring(
                                         document.name.lastIndexOf(".") + 1
                                     )}
@@ -119,25 +125,26 @@ const ShowAll = () => {
                                             document.name.lastIndexOf(".") + 1
                                         )
                                     ]}
-                                />
-                            </td>
-                            <td className="text-left">{document.name}</td>
-                            <td className="text-left">
-                                {document.timeCreated}
-                            </td>
-                            <td className="text-right">{document.size}</td>
+                                    />
+                                    </td>
+                                    <td className="text-left">{document.name}</td>
+                                    <td className="text-left">
+                                        {document.timeCreated}
+                                    </td>
+                                    <td className="text-right">{document.size}</td>
+                                </tr>
+                        );
+                    })}
+                    {displayLoadingIcon && (
+                        <tr className="lds-ring">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                         </tr>
-                    );
-                })}
-            {displayLoadingIcon && (
-                <tr className="lds-ring">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </tr>
-            )}
-        </tbody>
+            	    )}
+        	    </tbody>
+            </table>
     );
 };
 

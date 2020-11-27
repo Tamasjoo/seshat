@@ -81,7 +81,6 @@ router.delete("/:document", async (req: Request, res: Response) => {
 router.get("/", async (req: Request, res: Response) => {
     const searchLimit = 15;
     const { pattern, pageToken } = req.query as ParamsDictionary;
-    console.log("req.params: ", req.params);
     if (!!pattern) sysLogger.info(`File search: "${unescape(pattern)}"`);
     const callback = (
         err: Error,
