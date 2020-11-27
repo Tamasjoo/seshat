@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import "../styling/results.css"
-import axios from "../axiosConfig";
-import fileDownload from "js-file-download";
+import "../../styles/loadingAnimation.css"
+import axios from "../../axiosConfig";
 import { FileIcon, defaultStyles } from "react-file-icon";
+import {formatDate, formatSize, downloadFile} from "../../helpers/helpers.tsx"
 
 const ShowAll = () => {
     const [allDocuments, setAllDocuments] = useState([]);
@@ -17,12 +17,14 @@ const ShowAll = () => {
 
     const [displayLoadingIcon, setDisplayLoadingIcon] = useState(false);
 
+    //////////////////// infinite scroll and observer////////////////////
+
     let observer = useRef();
 
     const lastDocumentRef = useCallback((node) => {
         if (displayLoadingIcon) return;
-        console.log("lastdocuref triggered");
-        console.log("node is: ", node);
+        //console.log("lastdocuref triggered");
+        //console.log("node is: ", node);
         if (observer.current) observer.current.disconnect();
         observer.current = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && !noMoreResults) {
@@ -32,8 +34,9 @@ const ShowAll = () => {
         if (node) observer.current.observe(node);
     }, []);
 
+    //////////////////// infinite scroll and observer ////////////////////
+
     useEffect(() => {
-        console.log("useeffect triggered");
         if (noMoreResults) observer.current.disconnect();
         if (noMoreResults) return;
         setDisplayLoadingIcon(true);
@@ -45,52 +48,30 @@ const ShowAll = () => {
                 },
             })
             .then((res) => {
-                //formatting the size property of results
-                for (let i = 0; i < res.data.documents.length; i++) {
-                    if (res.data.documents[i].size / 1073741824 >= 1) {
-                        let size = res.data.documents[i].size / 1073741824;
-                        res.data.documents[i].size = `${size.toFixed(2)} GB`;
-                    } else if (res.data.documents[i].size / 1048576 >= 1) {
-                        let size = res.data.documents[i].size / 1048576;
-                        res.data.documents[i].size = `${size.toFixed(2)} MB`;
-                    } else if (res.data.documents[i].size / 1024 >= 1) {
-                        let size = res.data.documents[i].size / 1024;
-                        res.data.documents[i].size = `${size.toFixed(2)} KB`;
-                    } else {
-                        let size = res.data.documents[i].size;
-                        res.data.documents[i].size = `${size} B `;
-                    }
-                }
-                //formatting the date part of the results
-                for (let i = 0; i < res.data.documents.length; i++) {
-                    res.data.documents[i].timeCreated = new Date(
-                        res.data.documents[i].timeCreated
-                    ).toLocaleString();
-                }
+
+                formatSize(res.data)
+
+                //formatting the date part of the results, see in helpers
+                formatDate(res.data)
+
                 setAllDocuments([...allDocuments, ...res.data.documents]);
+
                 setDisplayLoadingIcon(false);
+
                 if (noMoreResults) observer.current.disconnect();
+
                 if (!res.data.nextQuery) {
                     setNoMoreResults(true);
                     return;
                 }
+
                 setPageToken(res.data.nextQuery.pageToken);
             })
             .catch((error) => {
-                console.error("error: ", error);
+                console.error("useEffect error: ", error);
             });
     }, [pageNumber]);
 
-// upon a click on a file, it gets downloaded
-
-    const download = (name) => {
-            axios.get("/api/documents/" + name, {
-                responseType: "blob",
-            })
-            .then((res) => {
-                fileDownload(res.data.documents, name);
-            });
-    };
 
     return (
             <table className="table">
@@ -114,7 +95,7 @@ const ShowAll = () => {
                     {!allDocuments && <p>No Files to display</p>}
                     {allDocuments && allDocuments.map((document, i) => {
                         return (
-                                <tr key={i} onClick={(e) => download(document.name)} ref={allDocuments.length === i + 1 ? lastDocumentRef : null}>
+                                <tr key={i} onClick={(e) => downloadFile(document.name)} ref={allDocuments.length === i + 1 ? lastDocumentRef : null}>
                                     <td className="text-left">
                                     <FileIcon
                                     extension={document.name.substring(
@@ -137,10 +118,10 @@ const ShowAll = () => {
                     })}
                     {displayLoadingIcon && (
                         <tr className="lds-ring">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
                         </tr>
             	    )}
         	    </tbody>

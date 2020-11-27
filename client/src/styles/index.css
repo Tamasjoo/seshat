@@ -1,0 +1,15 @@
+table {
+    position: relative;
+    border-collapse: collapse;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    border-top: 0 !important;
+}
+
+table svg {
+    width: 25px;
+}

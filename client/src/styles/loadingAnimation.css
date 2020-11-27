@@ -1,21 +1,3 @@
-table {
-    position: relative;
-    border-collapse: collapse;
-}
-
-th {
-    position: sticky;
-    top: 0;
-    background-color: white;
-    border-top: 0 !important;
-}
-
-table svg {
-    width: 25px;
-}
-
-/* *************************** Loading Animation *************************** */
-
 .lds-ring {
     display: inline-block;
     position: relative;
@@ -51,5 +33,3 @@ table svg {
         transform: rotate(360deg);
     }
 }
-
-/* *************************** Loading Animation *************************** */

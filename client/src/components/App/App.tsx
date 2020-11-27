@@ -1,6 +1,6 @@
 import React from "react";
-import ShowAll from "./ShowAll";
-import Logo from "./Logo";
+import ShowAll from "../ShowAll/ShowAll";
+import Logo from "../Logo/Logo";
 
 const App = () => {
     return (
