@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import "../../styles/loadingAnimation.css"
 import axios from "../../axiosConfig";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import {formatDate, formatSize, downloadFile} from "../../helpers/helpers.tsx"
+import {formatDate, formatSize, downloadFile} from "../../helpers/helpers.tsx";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation.tsx";
 
 const ShowAll = () => {
     const [allDocuments, setAllDocuments] = useState([]);
@@ -15,14 +15,14 @@ const ShowAll = () => {
 
     const [pageNumber, setPageNumber] = useState(1);
 
-    const [displayLoadingIcon, setDisplayLoadingIcon] = useState(false);
+    const [displayLoadingAnimation, setDisplayLoadingAnimation] = useState(false); // state that indicates if the loading animation should be shown
 
     //////////////////// infinite scroll and observer////////////////////
 
     let observer = useRef();
 
     const lastDocumentRef = useCallback((node) => {
-        if (displayLoadingIcon) return;
+        if (displayLoadingAnimation) return;
         //console.log("lastdocuref triggered");
         //console.log("node is: ", node);
         if (observer.current) observer.current.disconnect();
@@ -39,7 +39,7 @@ const ShowAll = () => {
     useEffect(() => {
         if (noMoreResults) observer.current.disconnect();
         if (noMoreResults) return;
-        setDisplayLoadingIcon(true);
+        setDisplayLoadingAnimation(true);
         axios
             .get("/api/documents", {
                 params: {
@@ -56,7 +56,7 @@ const ShowAll = () => {
 
                 setAllDocuments([...allDocuments, ...res.data.documents]);
 
-                setDisplayLoadingIcon(false);
+                setDisplayLoadingAnimation(false);
 
                 if (noMoreResults) observer.current.disconnect();
 
@@ -116,13 +116,8 @@ const ShowAll = () => {
                                 </tr>
                         );
                     })}
-                    {displayLoadingIcon && (
-                        <tr className="lds-ring">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </tr>
+                    {displayLoadingAnimation && (
+                        <LoadingAnimation/>
             	    )}
         	    </tbody>
             </table>
