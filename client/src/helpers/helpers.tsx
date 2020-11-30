@@ -4,7 +4,6 @@ import axios from "../axiosConfig";
 import fileDownload from "js-file-download";
 
 export const formatDate = (arg: any) => {
-    console.log("data.documents is: ", arg.documents);
     for (let i = 0; i < arg.documents.length; i++) {
         arg.documents[i].timeCreated = new Date(
             arg.documents[i].timeCreated).toLocaleString();
@@ -38,6 +37,6 @@ export const formatSize = (arg: any) => {
                 responseType: "blob",
             })
             .then((res) => {
-                fileDownload(res.data.documents, name);
+                fileDownload(res.data, name);
             });
     };
