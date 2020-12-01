@@ -1,0 +1,17 @@
+@media (max-width: 1000px) {
+  table svg {
+    width: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  table svg {
+    width: 19px;
+  }
+}
+
+@media (max-width: 430px) {
+  table svg {
+    width: 16px;
+  }
+}

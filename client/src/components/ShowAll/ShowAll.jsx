@@ -3,6 +3,7 @@ import axios from "../../axiosConfig";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import {formatDate, formatSize, downloadFile} from "../../helpers/helpers.tsx";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation.tsx";
+import "./fileIcon.css"
 
 const ShowAll = () => {
     const [allDocuments, setAllDocuments] = useState([]);

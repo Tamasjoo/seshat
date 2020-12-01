@@ -10,7 +10,6 @@
     position: absolute;
     width: 50px;
     height: 50px;
-    margin: 8px;
     border: 8px solid #dfc;
     border-radius: 50%;
     animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
@@ -32,4 +31,16 @@
     100% {
         transform: rotate(360deg);
     }
+}
+
+@media (max-width: 1000px) {
+    .lds-ring div {
+    width: 45px;
+    height: 45px;
+  }
+
+    .lds-ring {
+    width: 50px;
+    height: 50px;
+  }
 }
