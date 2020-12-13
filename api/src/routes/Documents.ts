@@ -22,31 +22,33 @@ const router = Router().use(adminMW);
  *  (DONE)  Download Document <ID> - "GET /api/documents/:document"
  ******************************************************************************/
 
-router.get('/:document', async (req: Request, res: Response) => {
-  let { document } = req.params as ParamsDictionary;
-  document = unescape(document) as string;
-  if (!document) {
-    return res.status(BAD_REQUEST).json({
-      error: paramMissingError,
-    });
-  } else {
-    const file = await storage.file(document);
-    await file.getMetadata();
-    res.writeHead(200, {
-      'Content-Type': file.metadata.contentType as string,
-      'Content-Length': file.metadata.size as string,
-      'Content-Disposition': `attachment; filename=${document}`
-    });
-    file.createReadStream().pipe(res).on('error', (err: any) => {
-      sysLogger.error(`File ${document} download error:\n`, err);
-      return res.status(BAD_GATEWAY).end();
-    }).on('end', () => {
-      sysLogger.info(`File '${document}' download complete.`);
-      return res.status(CREATED).end();
-    });
-  }
+router.get("/:document", async (req: Request, res: Response) => {
+    let { document } = req.params as ParamsDictionary;
+    document = unescape(document) as string;
+    if (!document) {
+        return res.status(BAD_REQUEST).json({
+            error: paramMissingError,
+        });
+    } else {
+        const file = await storage.file(document);
+        await file.getMetadata();
+        res.writeHead(200, {
+            "Content-Type": file.metadata.contentType as string,
+            "Content-Length": file.metadata.size as string,
+            "Content-Disposition": `attachment; filename=${document}`,
+        });
+        file.createReadStream()
+            .pipe(res)
+            .on("error", (err: any) => {
+                sysLogger.error(`File ${document} download error:\n`, err);
+                return res.status(BAD_GATEWAY).end();
+            })
+            .on("end", () => {
+                sysLogger.info(`File '${document}' download complete.`);
+                return res.status(CREATED).end();
+            });
+    }
 });
-
 
 /******************************************************************************
  *  (DONE)  Delete Document <ID> - "DELETE /api/documents/:document"

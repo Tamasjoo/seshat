@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "../../axiosConfig";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import {formatDate, formatSize, downloadFile} from "../../helpers/helpers.tsx";
+import { formatData } from "../../helpers/helpers.ts";
+import { downloadFile } from "../../services/document.service.ts";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation.tsx";
-import "./fileIcon.css"
+import "./fileIcon.css";
 
 const ShowAll = () => {
     const [allDocuments, setAllDocuments] = useState([]);
@@ -16,7 +17,9 @@ const ShowAll = () => {
 
     const [pageNumber, setPageNumber] = useState(1);
 
-    const [displayLoadingAnimation, setDisplayLoadingAnimation] = useState(false); // state that indicates if the loading animation should be shown
+    const [displayLoadingAnimation, setDisplayLoadingAnimation] = useState(
+        false
+    ); // state that indicates if the loading animation should be shown
 
     //////////////////// infinite scroll and observer////////////////////
 
@@ -31,7 +34,7 @@ const ShowAll = () => {
             if (entries[0].isIntersecting && !noMoreResults) {
                 setPageNumber((pageNumber) => pageNumber + 1);
             }
-        })
+        });
         if (node) observer.current.observe(node);
     }, []);
 
@@ -49,11 +52,7 @@ const ShowAll = () => {
                 },
             })
             .then((res) => {
-
-                formatSize(res.data)
-
-                //formatting the date part of the results, see in helpers
-                formatDate(res.data)
+                formatData(res.data.documents);
 
                 setAllDocuments([...allDocuments, ...res.data.documents]);
 
@@ -73,55 +72,62 @@ const ShowAll = () => {
             });
     }, [pageNumber]);
 
-
     return (
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th className="text-left" scope="col">
-                            Type
-                        </th>
-                        <th className="text-left" scope="col">
-                            Name
-                        </th>
-                        <th className="text-left" scope="col">
-                            Created At
-                        </th>
-                        <th className="text-right" scope="col">
-                            Size
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {!allDocuments && <p>No Files to display</p>}
-                    {allDocuments && allDocuments.map((document, i) => {
+        <table className="table">
+            <thead>
+                <tr>
+                    <th className="text-left" scope="col">
+                        Type
+                    </th>
+                    <th className="text-left" scope="col">
+                        Name
+                    </th>
+                    <th className="text-left" scope="col">
+                        Created At
+                    </th>
+                    <th className="text-right" scope="col">
+                        Size
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {!allDocuments && <p>No Files to display</p>}
+                {allDocuments &&
+                    allDocuments.map((document, i) => {
                         return (
-                                <tr key={i} onClick={(e) => downloadFile(document.name)} ref={allDocuments.length === i + 1 ? lastDocumentRef : null}>
-                                    <td className="text-left">
+                            <tr
+                                key={i}
+                                onClick={(e) => downloadFile(document.name)}
+                                ref={
+                                    allDocuments.length === i + 1
+                                        ? lastDocumentRef
+                                        : null
+                                }
+                            >
+                                <td className="text-left">
                                     <FileIcon
-                                    extension={document.name.substring(
-                                        document.name.lastIndexOf(".") + 1
-                                    )}
-                                    {...defaultStyles[
-                                        document.name.substring(
+                                        extension={document.name.substring(
                                             document.name.lastIndexOf(".") + 1
-                                        )
-                                    ]}
+                                        )}
+                                        {...defaultStyles[
+                                            document.name.substring(
+                                                document.name.lastIndexOf(".") +
+                                                    1
+                                            )
+                                        ]}
                                     />
-                                    </td>
-                                    <td className="text-left">{document.name}</td>
-                                    <td className="text-left">
-                                        {document.timeCreated}
-                                    </td>
-                                    <td className="text-right">{document.size}</td>
-                                </tr>
+                                </td>
+                                <td className="text-left">{document.name}</td>
+                                <td className="text-left">
+                                    {document.timeCreated}
+                                </td>
+                                <td className="text-right">{document.size}</td>
+                            </tr>
                         );
                     })}
-                    {displayLoadingAnimation && (
-                        <LoadingAnimation/>
-            	    )}
-        	    </tbody>
-            </table>
+                {displayLoadingAnimation && <LoadingAnimation />}
+            </tbody>
+        </table>
     );
 };
 
