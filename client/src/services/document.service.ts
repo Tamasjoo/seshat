@@ -12,3 +12,12 @@ export const downloadFile = (name: any) => {
             fileDownload(res.data, name);
         });
 };
+
+export const getNextDocumentGroup = (pattern: any, pageToken: any) => {
+    return axios.get("/api/documents", {
+        params: {
+            pattern: pattern,
+            pageToken: pageToken,
+        },
+    });
+};

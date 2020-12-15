@@ -1,48 +1,37 @@
 //formats dates
 
-export const formatDate = (arg: any) => {
-    for (let i = 0; i < arg.length; i++) {
-        arg[i].timeCreated = new Date(arg[i].timeCreated).toLocaleString();
-    }
+export const formatDate = (timeCreated: any) => {
+    console.log("timeCreated:", timeCreated);
+    return new Date(timeCreated).toLocaleString();
 };
 
 //formats file sizes
 
-export const formatSize = (arg: any) => {
-    for (let i = 0; i < arg.length; i++) {
-        if (arg[i].size / 1073741824 >= 1) {
-            let size = arg[i].size / 1073741824;
-            arg[i].size = `${size.toFixed(2)} GB`;
-        } else if (arg[i].size / 1048576 >= 1) {
-            let size = arg[i].size / 1048576;
-            arg[i].size = `${size.toFixed(2)} MB`;
-        } else if (arg[i].size / 1024 >= 1) {
-            let size = arg[i].size / 1024;
-            arg[i].size = `${size.toFixed(2)} KB`;
-        } else {
-            let size = arg[i].size;
-            arg[i].size = `${size} B `;
-        }
+export const formatSize = (size: any) => {
+    console.log("size:", size);
+    const KB = 1024;
+    const MB = KB ** 2;
+    const GB = KB ** 3;
+
+    if (size / GB >= 1) {
+        size = size / GB;
+        return `${size.toFixed(2)} GB`;
+    } else if (size / MB >= 1) {
+        size = size / MB;
+        return `${size.toFixed(2)} MB`;
+    } else if (size / KB >= 1) {
+        size = size / KB;
+        return `${size.toFixed(2)} KB`;
+    } else {
+        return `${size} B `;
     }
-    /*var newArr = arg.map((x: any) => {
-        if (x.size / 1073741824 >= 1) {
-            let size = x.size / 1073741824;
-            x.size = `${size.toFixed(2)} GB`;
-        } else if (x.size / 1048576 >= 1) {
-            let size = x.size / 1048576;
-            x.size = `${size.toFixed(2)} MB`;
-        } else if (x.size / 1024 >= 1) {
-            let size = x.size / 1024;
-            x.size = `${size.toFixed(2)} KB`;
-        } else {
-            let size = x.size;
-            x.size = `${size} B `;
-        }
-        console.log("x.size is: ", x.size);
-    });*/
 };
 
-export const formatData = (arg: any) => {
-    formatDate(arg);
-    formatSize(arg);
+export const formatData = (documents: any) => {
+    console.log("documents:", documents);
+    return documents.map((document: any) => {
+        document.timeCreated = formatDate(document.timeCreated);
+        document.size = formatSize(document.size);
+        return document;
+    });
 };

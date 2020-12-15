@@ -2,14 +2,17 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "../../axiosConfig";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { formatData } from "../../helpers/helpers.ts";
-import { downloadFile } from "../../services/document.service.ts";
+import {
+    downloadFile,
+    getNextDocumentGroup,
+} from "../../services/document.service.ts";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation.tsx";
 import "./fileIcon.css";
 
 const ShowAll = () => {
     const [allDocuments, setAllDocuments] = useState([]);
 
-    const [pageToken, setPageToken] = useState(); // google cloude storage needs it to determine which set of items is needed next
+    const [pageToken, setPageToken] = useState(""); // google cloude storage needs it to determine which set of items is needed next
 
     const pattern = "";
 
@@ -44,17 +47,13 @@ const ShowAll = () => {
         if (noMoreResults) observer.current.disconnect();
         if (noMoreResults) return;
         setDisplayLoadingAnimation(true);
-        axios
-            .get("/api/documents", {
-                params: {
-                    pattern: pattern,
-                    pageToken: pageToken,
-                },
-            })
+        getNextDocumentGroup(pattern, pageToken)
             .then((res) => {
-                formatData(res.data.documents);
+                console.log("res:", res);
 
-                setAllDocuments([...allDocuments, ...res.data.documents]);
+                const formattedData = formatData(res.data.documents.slice());
+
+                setAllDocuments([...allDocuments, ...formattedData]);
 
                 setDisplayLoadingAnimation(false);
 
