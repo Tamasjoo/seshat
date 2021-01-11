@@ -49,8 +49,6 @@ const ShowAll = () => {
         setDisplayLoadingAnimation(true);
         getNextDocumentGroup(pattern, pageToken)
             .then((res) => {
-                console.log("res:", res);
-
                 const formattedData = formatData(res.data.documents.slice());
 
                 setAllDocuments([...allDocuments, ...formattedData]);

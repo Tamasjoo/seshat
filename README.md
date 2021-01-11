@@ -10,9 +10,10 @@ IT retrieves files from a Google Cloud Storage bucket and lists them in the fron
 
 ## Main Features
 
--   Display and Download files
+-   Displaying and Download files from Cloud Storage
 -   Infinite scroll
--   File extension icon
+-   Displaying File extension icons and names
+-   Formatted file creation times and dates + file sizes
 
 ## Used Stack
 

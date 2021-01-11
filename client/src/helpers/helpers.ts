@@ -1,14 +1,21 @@
 //formats dates
 
-export const formatDate = (timeCreated: any) => {
-    console.log("timeCreated:", timeCreated);
+interface IncomingDocu {
+    size: number;
+    timeCreated: string;
+}
+
+interface IncomingDocus extends Array<IncomingDocu> {}
+
+export const formatDate = (timeCreated: string) => {
+    //console.log("timeCreated:", timeCreated);
     return new Date(timeCreated).toLocaleString();
 };
 
 //formats file sizes
 
-export const formatSize = (size: any) => {
-    console.log("size:", size);
+export const formatSize = (size: number) => {
+    //console.log("size:", size);
     const KB = 1024;
     const MB = KB ** 2;
     const GB = KB ** 3;
@@ -27,8 +34,8 @@ export const formatSize = (size: any) => {
     }
 };
 
-export const formatData = (documents: any) => {
-    console.log("documents:", documents);
+export const formatData = (documents: IncomingDocus) => {
+    //console.log("documents:", documents);
     return documents.map((document: any) => {
         document.timeCreated = formatDate(document.timeCreated);
         document.size = formatSize(document.size);
