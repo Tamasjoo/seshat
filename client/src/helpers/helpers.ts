@@ -1,11 +1,12 @@
 //formats dates
 
-interface IncomingDocu {
+export interface Document {
+    name: string;
     size: number;
     timeCreated: string;
 }
 
-interface IncomingDocus extends Array<IncomingDocu> {}
+export interface IncomingDocus extends Array<Document> {}
 
 export const formatDate = (timeCreated: string) => {
     //console.log("timeCreated:", timeCreated);
@@ -30,15 +31,19 @@ export const formatSize = (size: number) => {
         size = size / KB;
         return `${size.toFixed(2)} KB`;
     } else {
-        return `${size} B `;
+        return `${size} B`;
     }
 };
 
-export const formatData = (documents: IncomingDocus) => {
+export const formatData = (documents: IncomingDocus | any) => {
     //console.log("documents:", documents);
-    return documents.map((document: any) => {
-        document.timeCreated = formatDate(document.timeCreated);
-        document.size = formatSize(document.size);
-        return document;
-    });
+    if (documents !== [{}]) {
+        return documents.map((document: any) => {
+            document.timeCreated = formatDate(document.timeCreated);
+            document.size = formatSize(document.size);
+            return document;
+        });
+    } else {
+        return null;
+    }
 };

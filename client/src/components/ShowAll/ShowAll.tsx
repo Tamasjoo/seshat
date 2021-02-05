@@ -1,32 +1,34 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import axios from "../../axiosConfig";
 import { FileIcon, defaultStyles } from "react-file-icon";
-import { formatData } from "../../helpers/helpers.ts";
+import { formatData } from "../../helpers/helpers";
 import {
     downloadFile,
     getNextDocumentGroup,
-} from "../../services/document.service.ts";
-import LoadingAnimation from "../LoadingAnimation/LoadingAnimation.tsx";
+} from "../../services/document.service";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import "./fileIcon.css";
 
+import { Document, IncomingDocus } from "../../helpers/helpers";
+
 const ShowAll = () => {
-    const [allDocuments, setAllDocuments] = useState([]);
+    const [allDocuments, setAllDocuments] = useState([]); // add type definition
 
-    const [pageToken, setPageToken] = useState(""); // google cloude storage needs it to determine which set of items is needed next
+    const [pageToken, setPageToken] = useState<string>(""); // google cloude storage needs it to determine which set of items is needed next
 
-    const pattern = "";
+    const pattern: string = "";
 
-    const [noMoreResults, setNoMoreResults] = useState(false);
+    const [noMoreResults, setNoMoreResults] = useState<boolean>(false);
 
-    const [pageNumber, setPageNumber] = useState(1);
+    const [pageNumber, setPageNumber] = useState<number>(1);
 
-    const [displayLoadingAnimation, setDisplayLoadingAnimation] = useState(
-        false
-    ); // state that indicates if the loading animation should be shown
+    const [
+        displayLoadingAnimation,
+        setDisplayLoadingAnimation,
+    ] = useState<boolean>(false); // state that indicates if the loading animation should be shown
 
     //////////////////// infinite scroll and observer////////////////////
 
-    let observer = useRef();
+    let observer = useRef<IntersectionObserver | null>(null);
 
     const lastDocumentRef = useCallback((node) => {
         if (displayLoadingAnimation) return;
@@ -49,7 +51,12 @@ const ShowAll = () => {
         setDisplayLoadingAnimation(true);
         getNextDocumentGroup(pattern, pageToken)
             .then((res) => {
-                const formattedData = formatData(res.data.documents.slice());
+                console.log("res:", res);
+
+                const formattedData: IncomingDocus = formatData(
+                    res.data.documents.slice()
+                );
+                console.log("formattedData:", formattedData);
 
                 setAllDocuments([...allDocuments, ...formattedData]);
 

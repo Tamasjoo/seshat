@@ -97,6 +97,7 @@ router.get("/", async (req: Request, res: Response) => {
                 size: file.metadata.size,
                 timeCreated: file.metadata.timeCreated,
             }));
+            console.log("docs: ", docs);
             sysLogger.info(`Listing ${files.length} files.`);
             res.status(OK).json({
                 nextQuery: nextQuery,
